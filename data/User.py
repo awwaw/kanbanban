@@ -23,3 +23,4 @@ class User(SqlAlchemyBase, UserMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     task = orm.relation("Task", back_populates='user')
+    board = orm.relation("Board", back_populates='user')

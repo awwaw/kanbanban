@@ -7,11 +7,11 @@ from wtforms.validators import DataRequired, email_validator
 import sqlalchemy
 import requests
 
-from data.Forms import LoginForm, RegisterForm
+from data.Forms import LoginForm, RegisterForm, NewBoardForm
 
 #TODO: Пофиксить говно с вылетом при добавлении работы
 
-from data import db_session, User, Task, __all_models
+from data import db_session, User, Task, __all_models, Board
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexliceum_secret_key'
@@ -70,9 +70,29 @@ def mainPage():
         # session = db_session.create_session()
         # desks = session.query(Desk.Desk)
         #TODO: Добавить класс доски и отображение на главной странице если пользователь авторизирован
-        pass
+        return render_template('index.html')
     else:
         return render_template("mainPage.html", title="Kanbanban")
+
+
+@app.route('/new_task', methods=['POST', 'GET'])
+def new_board():
+    if current_user.is_authenticated:
+        form = NewBoardForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            if session.query(Board.Board).filter(Board.Board.title == form.title.data).first():
+                return render_template('new_board.html', message="Доска с таким именем уже существует", form=form)
+            board = Board.Board(
+                title=form.title.data,
+                isPrivate=form.isPrivate.data
+            )
+            current_user.board.append(board)
+            session.merge(current_user)
+            session.commit()
+            return redirect('/') #TODO: Сделать перенаправление на страницу доски
+        return render_template("new_board.html", title="Новая доска", form=form)
+    return redirect('/login')
 
 
 if __name__ == '__main__':

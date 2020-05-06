@@ -9,9 +9,12 @@ class Board(SqlAlchemyBase):
     __tablename__ = 'boards'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, autoincrement=True)
+    title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     workers = sqlalchemy.Column(sqlalchemy.String)
     tasks = sqlalchemy.Column(sqlalchemy.String)
     isPrivate = sqlalchemy.Column(sqlalchemy.Boolean)
+
+    user = orm.relation('User')
 
     def getWorkers(self):
         return list(self.workers.split(','))
