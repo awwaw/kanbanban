@@ -68,7 +68,7 @@ def login():
 def mainPage():
     if current_user.is_authenticated:
         session = db_session.create_session()
-        boards = session.query(Board.Board)
+        boards = session.query(Board.Board)[::-1]
         return render_template('index.html', boards=boards)
     else:
         return render_template("mainPage.html", title="Kanbanban")
@@ -89,7 +89,7 @@ def new_board():
                 user_id=current_user.id
             )
             user = session.query(User.User).filter(User.User.id == current_user.id).first()
-            user.board.append(board)
+            user.board.insert(0, board)
             session.merge(user)
             # session.add(board)
             session.commit()

@@ -54,6 +54,11 @@
             .dropdown-content a:hover {background-color: #ddd}
 
             .show {display:block;}
+
+            .li-card {
+                list-style-type: none;
+                display: inline;
+            }
         </style>
 
 
@@ -79,39 +84,46 @@
             <hr noshade width="40%">
             <a class="btn btn-outline-warning" href="new_board" style="margin-left: 43.88%">Создать новую</a>
         </div>
-        <div class="boards-list">
-        {% for item in boards %}
-
-            {% set class = "" %}
-            {% set text_color = "" %}
-            {% if item.isPrivate %}
-                {% set color = "#ffb6c1" %}
-                {% set text = "Private" %}
-                {% set class = "bg-dark" %}
-                {% set text_color = "text-white" %}
-            {% else %}
-                {% set color = "#54ff9f" %}
-                {% set text = "Public" %}
-                {% set class = "bg-light" %}
-                {% set text_color = "text-black" %}
-            {% endif %}
-
-            <div class="card {{ text_color }} {{ class }} mb-3" style="max-width: 18rem;">
-                <div class="card-header">
-                    {{ text }}
-                </div>
-                <div class="card-body">
-                    <a class="card-title" href="/board/{{ item.id }}">{{ item.title }}</a>
-                    <p class="card-text">Автор - {{ item.user.name }}</p>
-                </div>
-                {% if current_user.id == item.user.id %}
-                    <div style="margin-left: auto; margin-right: auto; margin-bottom: 5px;">
-                        <a href="/edit_board/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
-                        <a href="/delete_board/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+        <table border="0">
+            <div class="boards-list">
+                {% for item in boards %}
+                    {% set index = loop.index0 %}
+                    {% set class = "" %}
+                    {% set text_color = "" %}
+                    {% if item.isPrivate %}
+                        {% set color = "#ffb6c1" %}
+                        {% set text = "Private" %}
+                        {% set class = "bg-dark" %}
+                        {% set text_color = "text-white" %}
+                    {% else %}
+                        {% set color = "#54ff9f" %}
+                        {% set text = "Public" %}
+                        {% set class = "bg-light" %}
+                        {% set text_color = "text-black" %}
+                    {% endif %}
+                    {% if index % 3 != 2 %}
+                        {% set style = "float: left; margin-right: 20px;" %}
+                        {% if index % 3 == 0 %}
+                            {% set style = "float: left; margin-right: 20px; margin-left: 2.76%;" %}
+                        {% endif %}
+                    {% endif %}
+                    <div class="card {{ text_color }} {{ class }} mb-3" style="width: 30%; {{ style }}">
+                        <div class="card-header">
+                            {{ text }}
+                        </div>
+                        <div class="card-body">
+                            <a class="card-title" href="/board/{{ item.id }}">{{ item.title }}</a>
+                            <p class="card-text">Автор - {{ item.user.name }}</p>
+                        </div>
+                        {% if current_user.id == item.user.id %}
+                            <div style="margin-left: auto; margin-right: auto; margin-bottom: 5px;">
+                                <a href="/edit_board/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
+                                <a href="/delete_board/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                {% endfor %}
             </div>
-        {% endfor %}
-        </div>
+        </table>
     </body>
 </html>
