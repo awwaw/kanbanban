@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <style>
+        body {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .buttons {
+            float: none;
+            margin-right: 0;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
+
+        .line {
+            border-left: 2px solid #ccc;
+            width: 70%;
+        }
+
+        .header {
+            font-size: 40pt;
+            font-weight: 100;
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .content {
+            width: 60%;
+            margin-right: 5%;
+            margin-left: 5%;
+        }
+
+        .members {
+            width: 10%;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand kanban">Kanbanban</a>
+        <nav class="buttons">
+            <div class="dropdown">
+                <button onclick="dropdownFunction()" class="btn btn-outline-info dropbtn">{{ current_user.name }}</button>
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="/profile/{{ current_user.id }}">Профиль</a>
+                    <a href="/logout">Выйти</a>
+                </div>
+            </div>
+            <script src="../static/scripts/sc1.js"></script>
+        </nav>
+    </nav>
+
+    <div class="header-block">
+        <h2 class="header">Доска: {{ board.title }}</h2>
+        <hr noshade width="40%" color="orange">
+    </div>
+
+    <div class="row">
+        <div class="content">
+            <h1>content</h1>
+            <hr noshade width="100%">
+        </div>
+        <div class="members">
+            <h1>members</h1>
+            <hr noshade width="100%">
+            <div id="invite-block">
+                <button class="btn btn-outline-warning invite" onclick="invite()">Пригласить пользователя</button>
+                <div id="invite-link"></div>
+            </div>
+            <script src="../static/scripts/sc2.js"></script>
+
+        </div>
+    </div>
+
+</body>
+</html>

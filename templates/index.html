@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <meta chaset="utf-8">
+        <meta charset="utf-8">
         <title>{{ title }}</title>
         <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -59,6 +59,21 @@
                 list-style-type: none;
                 display: inline;
             }
+
+            .kek {
+                position: relative;
+            }
+
+            .alrt {
+                display: none;
+                position: absolute;
+                z-index: 1;
+            }
+
+            .kek:hover .alrt {
+                display: block;
+            }
+
         </style>
 
 
@@ -107,7 +122,7 @@
                             {% set style = "float: left; margin-right: 20px; margin-left: 2.76%;" %}
                         {% endif %}
                     {% endif %}
-                    <div class="card {{ text_color }} {{ class }} mb-3" style="width: 30%; {{ style }}">
+                    <div class="card {{ text_color }} {{ class }} mb-3" style="width: 30%; height: 200px; overflow: auto; {{ style }}">
                         <div class="card-header">
                             {{ text }}
                         </div>
@@ -119,6 +134,10 @@
                             <div style="margin-left: auto; margin-right: auto; margin-bottom: 5px;">
                                 <a href="/edit_board/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
                                 <a href="/delete_board/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+                            </div>
+                        {% else %}
+                            <div class="kek" style="height: 10%; margin-bottom: 50px;">
+                                <div class="alert alert-dark alrt" role="alert" style="width: 95%; margin-left: 2.5%">Вы не можете управлять этой доской</div>
                             </div>
                         {% endif %}
                     </div>

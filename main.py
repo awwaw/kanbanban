@@ -7,6 +7,8 @@ from wtforms.validators import DataRequired, email_validator
 import sqlalchemy
 import requests
 
+from sqlalchemy import or_
+
 from data.Forms import LoginForm, RegisterForm, NewBoardForm
 
 #TODO: Пофиксить говно с вылетом при добавлении работы
@@ -64,11 +66,60 @@ def login():
     return render_template("login.html", title="Авторизация", form=form, message="1")
 
 
+@app.route('/delete_board/<id>', methods=['POST', 'GET'])
+@login_required
+def delete_board(id):
+    session = db_session.create_session()
+    board = session.query(Board.Board).filter(Board.Board.id == int(id),
+                                              Board.Board.user == current_user).first()
+    if board:
+        session.delete(board)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
+@app.route('/edit_board/<id>', methods=['POST', 'GET'])
+@login_required
+def edit_board(id):
+    form = NewBoardForm()
+    if request.method == 'GET':
+        session = db_session.create_session()
+        board = session.query(Board.Board).filter(Board.Board.id == int(id)).first()
+        if board:
+            form.title.data = board.title
+            #TODO: Если будут добавлены еще свойства доски, добавить их сюда
+        else:
+            abort(404)
+
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        board = session.query(Board.Board).filter(Board.Board.id == int(id),
+                                                  Board.Board.user == current_user).first()
+        if board:
+            board.title = form.title.data
+            session.commit()
+            return redirect('/')
+        else:
+            abort(404)
+
+    return render_template('new_board.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
 @app.route('/')
 def mainPage():
     if current_user.is_authenticated:
         session = db_session.create_session()
-        boards = session.query(Board.Board)[::-1]
+        boards = session.query(Board.Board).filter(or_(Board.Board.user == current_user,
+                                                   Board.Board.workers.contains(str(current_user.id))))[::-1]
         return render_template('index.html', boards=boards)
     else:
         return render_template("mainPage.html", title="Kanbanban")
@@ -81,13 +132,16 @@ def new_board():
         form = NewBoardForm()
         if form.validate_on_submit():
             session = db_session.create_session()
-            if session.query(Board.Board).filter(Board.Board.title == form.title.data).first():
+            if session.query(Board.Board).filter(Board.Board.title == form.title.data,
+                                                 Board.Board.user == current_user).first():
                 return render_template('new_board.html', message="Доска с таким именем уже существует", form=form)
             board = Board.Board(
                 title=form.title.data,
                 isPrivate=form.isPrivate.data,
-                user_id=current_user.id
+                user_id=current_user.id,
+                workers=str(current_user.id)
             )
+            # board.workers.append(str(current_user.id))  # TODO: Не забыть добавлять ЗАПЯТУЮ при приглашениях
             user = session.query(User.User).filter(User.User.id == current_user.id).first()
             user.board.insert(0, board)
             session.merge(user)
@@ -96,6 +150,28 @@ def new_board():
             return redirect('/') #TODO: Сделать перенаправление на страницу доски
         return render_template("new_board.html", title="Новая доска", form=form)
     return redirect('/login')
+
+
+@app.route('/board')
+def b():
+    return redirect('/')
+
+
+@app.route('/board/<id>', methods=['POST', 'GET'])
+@login_required
+def board(id):
+    session = db_session.create_session()
+    tasks = session.query(Task.Task).filter(Task.Task.board == int(id))
+    cur_board = session.query(Board.Board).filter(Board.Board.id == int(id)).first()
+    if cur_board:
+        members = str(cur_board.workers).split(',')
+    else:
+        return abort(404)
+    print(members)
+    print(current_user.id)
+    if cur_board.isPrivate and str(current_user.id) not in members:
+        return render_template('oops.html')
+    return render_template('board.html', tasks=tasks, members=members, board=cur_board)
 
 
 if __name__ == '__main__':
