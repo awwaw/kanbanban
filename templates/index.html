@@ -9,6 +9,12 @@
           crossorigin="anonymous">
         <link rel="stylesheet" href="static/css/index-style.css">
         <style>
+            body {
+                width: 60%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
             .header {
                 font-size: 40pt;
                 font-weight: 100;
@@ -18,21 +24,94 @@
                 margin-bottom: 20px;
                 text-align: center;
             }
+
+            .buttons {
+                float: none;
+                margin-right: 0;
+            }
+
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f1f1f1;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+            .dropdown-content a:hover {background-color: #ddd}
+
+            .show {display:block;}
         </style>
+
+
     </head>
 
     <body>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <a class="navbar-brand kanban">Kanbanban</a>
             <nav class="buttons">
-                <a class="btn btn-outline-primary" href="/profile">Профиль</a>
+                <div class="dropdown">
+                    <button onclick="dropdownFunction()" class="btn btn-outline-info dropbtn">{{ current_user.name }}</button>
+                    <div id="myDropdown" class="dropdown-content">
+                        <a href="/profile/{{ current_user.id }}">Профиль</a>
+                        <a href="/logout">Выйти</a>
+                    </div>
+                </div>
+                <script src="static/scripts/sc1.js"></script>
             </nav>
         </nav>
         <!--h1>ало</h1-->
-        <div class="header-block">
+        <div class="header-block" style="margin-bottom: 30px;">
             <h2 class="header">Список ваших досок</h2>
             <hr noshade width="40%">
-            <a class="btn btn-outline-warning" href="new_task" style="margin-left: 30%;">Создать новую</a>
+            <a class="btn btn-outline-warning" href="new_board" style="margin-left: 43.88%">Создать новую</a>
+        </div>
+        <div class="boards-list">
+        {% for item in boards %}
+
+            {% set class = "" %}
+            {% set text_color = "" %}
+            {% if item.isPrivate %}
+                {% set color = "#ffb6c1" %}
+                {% set text = "Private" %}
+                {% set class = "bg-dark" %}
+                {% set text_color = "text-white" %}
+            {% else %}
+                {% set color = "#54ff9f" %}
+                {% set text = "Public" %}
+                {% set class = "bg-light" %}
+                {% set text_color = "text-black" %}
+            {% endif %}
+
+            <div class="card {{ text_color }} {{ class }} mb-3" style="max-width: 18rem;">
+                <div class="card-header">
+                    {{ text }}
+                </div>
+                <div class="card-body">
+                    <a class="card-title" href="/board/{{ item.id }}">{{ item.title }}</a>
+                    <p class="card-text">Автор - {{ item.user.name }}</p>
+                </div>
+                {% if current_user.id == item.user.id %}
+                    <div style="margin-left: auto; margin-right: auto; margin-bottom: 5px;">
+                        <a href="/edit_board/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
+                        <a href="/delete_board/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
         </div>
     </body>
 </html>

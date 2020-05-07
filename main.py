@@ -67,15 +67,15 @@ def login():
 @app.route('/')
 def mainPage():
     if current_user.is_authenticated:
-        # session = db_session.create_session()
-        # desks = session.query(Desk.Desk)
-        #TODO: Добавить класс доски и отображение на главной странице если пользователь авторизирован
-        return render_template('index.html')
+        session = db_session.create_session()
+        boards = session.query(Board.Board)
+        return render_template('index.html', boards=boards)
     else:
         return render_template("mainPage.html", title="Kanbanban")
 
 
-@app.route('/new_task', methods=['POST', 'GET'])
+@app.route('/new_board', methods=['POST', 'GET'])
+@login_required
 def new_board():
     if current_user.is_authenticated:
         form = NewBoardForm()
@@ -85,10 +85,13 @@ def new_board():
                 return render_template('new_board.html', message="Доска с таким именем уже существует", form=form)
             board = Board.Board(
                 title=form.title.data,
-                isPrivate=form.isPrivate.data
+                isPrivate=form.isPrivate.data,
+                user_id=current_user.id
             )
-            current_user.board.append(board)
-            session.merge(current_user)
+            user = session.query(User.User).filter(User.User.id == current_user.id).first()
+            user.board.append(board)
+            session.merge(user)
+            # session.add(board)
             session.commit()
             return redirect('/') #TODO: Сделать перенаправление на страницу доски
         return render_template("new_board.html", title="Новая доска", form=form)

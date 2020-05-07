@@ -18,6 +18,6 @@ class LoginForm(FlaskForm):
 
 
 class NewBoardForm(FlaskForm):
-    title = StringField(validators=[DataRequired()])
-    isPrivate = BooleanField()
-    create = SubmitField("create")
+    title = StringField("Название", validators=[DataRequired()])
+    isPrivate = BooleanField("Приватная?")
+    create = SubmitField("Создать")

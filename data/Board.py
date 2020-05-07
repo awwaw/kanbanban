@@ -1,6 +1,6 @@
 import datetime
 import sqlalchemy
-from sqlalchemy import orm
+from sqlalchemy import orm, PrimaryKeyConstraint
 
 from .db_session import SqlAlchemyBase
 
@@ -8,12 +8,15 @@ from .db_session import SqlAlchemyBase
 class Board(SqlAlchemyBase):
     __tablename__ = 'boards'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, autoincrement=True)
+    id = sqlalchemy.Column(sqlalchemy.Integer, autoincrement=True,
+                           primary_key=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     workers = sqlalchemy.Column(sqlalchemy.String)
     tasks = sqlalchemy.Column(sqlalchemy.String)
     isPrivate = sqlalchemy.Column(sqlalchemy.Boolean)
 
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
 
     def getWorkers(self):
