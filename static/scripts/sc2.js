@@ -4,5 +4,7 @@ let invite = () => {
 
 
 let close = () => {
-	document.getElementById("invite-block").innerHTML = '<button class="btn btn-outline-warning invite" onclick="invite()">Пригласить пользователя</button><div id="invite-link"></div>';
+	console.log("b");
+	document.getElementById("invite-block").innerHTML = '<button class="btn btn-outline-warning invite" onclick="invite()">Пригласить пользователя</button>';
+
 }
