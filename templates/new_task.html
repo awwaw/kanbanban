@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta chaset="utf-8">
-    <title>Новая доска</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
     <style>
@@ -13,28 +14,9 @@
             margin-right: auto;
         }
 
-        .title-field {
-            width: 90%;
-            margin-left: 5%;
-
-        }
-
-        .header {
-            font-size: 40pt;
-            font-weight: 100;
-            margin-top: 120px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .label {
-            margin-left: 5%;
-            font-size: 20pt;
-            font-weight: 200;
-            margin-bottom: -15px;
-
+        .buttons {
+            float: none;
+            margin-right: 0;
         }
 
         .dropdown {
@@ -61,6 +43,44 @@
         .dropdown-content a:hover {background-color: #ddd}
 
         .show {display:block;}
+
+        .line {
+            border-left: 2px solid #ccc;
+            width: 70%;
+        }
+
+        .header {
+            font-size: 40pt;
+            font-weight: 100;
+            margin-top: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .content {
+            width: 60%;
+            margin-right: 5%;
+            margin-left: 5%;
+        }
+
+        .members {
+            width: 10%;
+        }
+
+        .invite-block {
+            text-align: center;
+        }
+
+        .label {
+            margin-left: 5%;
+            font-size: 20pt;
+            font-weight: 200;
+            margin-bottom: -15px;
+
+        }
+
     </style>
 </head>
 <body>
@@ -74,18 +94,19 @@
                     <a href="/logout">Выйти</a>
                 </div>
             </div>
-            <script src="/static/scripts/sc1.js"></script>
+            <script src="../static/scripts/sc1.js"></script>
         </nav>
     </nav>
-    <p></p>
-    <div class="header-block" style="margin-top: 50px">
-        <h2 class="header">Новая доска</h2>
-        <hr noshade width="40%">
+
+    <div class="header-block">
+        <h2 class="header">Добавление записи</h2>
+        <hr noshade width="40%" color="orange">
     </div>
+
     <form action="" method="post">
         {{ form.hidden_tag() }}
         {{ form.csrf_token }}
-        <p>
+        <div>
             {{ form.title.label(class="label") }}
             <hr align="left" width="15%" noshade style="margin-left: 5%">
             <br>
@@ -95,21 +116,27 @@
                     {{ error }}
                 </div>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.isPrivate.label(class="label") }}
+
+            <p class="label">Текст</p>
             <hr align="left" width="15%" noshade style="margin-left: 5%">
             <br>
-            {{ form.isPrivate(style="margin-left: 5%") }}
-        </p>
-        <p>
-            {{ form.create(type="submit", class="btn btn-success", style="margin-left: 5%") }}
-        </p>
-        <div>
-            {% if message %}
-                <a class="alert alert-warning">{{ message }}</a>
-            {% endif %}
+            {{ form.content(class="form-control title-field", type="title", placeholder="Вставить текст") }}<br>
+            {% for error in form.content.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+
+            <p>
+                {{ form.add(type="submit", class="btn btn-outline-success", style="margin-left: 5%") }}
+            </p>
+            <div>
+                {% if message %}
+                    <a class="alert alert-warning">{{ message }}</a>
+                {% endif %}
+            </div>
         </div>
     </form>
+
 </body>
 </html>

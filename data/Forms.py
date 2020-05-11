@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, email_validator
 
 
@@ -21,3 +21,9 @@ class NewBoardForm(FlaskForm):
     title = StringField("Название", validators=[DataRequired()])
     isPrivate = BooleanField("Приватная?")
     create = SubmitField("Создать")
+
+
+class NewTaskForm(FlaskForm):
+    title = StringField("Заголовок")
+    content = TextAreaField("Текст записи", validators=[DataRequired()])
+    add = SubmitField("Добавить")

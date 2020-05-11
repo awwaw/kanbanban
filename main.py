@@ -9,7 +9,7 @@ import requests
 
 from sqlalchemy import or_
 
-from data.Forms import LoginForm, RegisterForm, NewBoardForm
+from data.Forms import LoginForm, RegisterForm, NewBoardForm, NewTaskForm
 
 #TODO: Пофиксить говно с вылетом при добавлении работы
 
@@ -139,15 +139,18 @@ def new_board():
                 title=form.title.data,
                 isPrivate=form.isPrivate.data,
                 user_id=current_user.id,
-                workers=str(current_user.id)
+                workers=str(current_user.id),
+                tasks="#,"
             )
             # board.workers.append(str(current_user.id))  # TODO: Не забыть добавлять ЗАПЯТУЮ при приглашениях
             user = session.query(User.User).filter(User.User.id == current_user.id).first()
             user.board.insert(0, board)
             session.merge(user)
+            id = board.id
             # session.add(board)
+            print(id)
             session.commit()
-            return redirect('/') #TODO: Сделать перенаправление на страницу доски
+            return redirect('/board/' + str(id)) #TODO: Сделать перенаправление на страницу доски
         return render_template("new_board.html", title="Новая доска", form=form)
     return redirect('/login')
 
@@ -160,18 +163,82 @@ def b():
 @app.route('/board/<id>', methods=['POST', 'GET'])
 @login_required
 def board(id):
-    session = db_session.create_session()
-    tasks = session.query(Task.Task).filter(Task.Task.board == int(id))
-    cur_board = session.query(Board.Board).filter(Board.Board.id == int(id)).first()
-    if cur_board:
-        members = str(cur_board.workers).split(',')
-    else:
-        return abort(404)
-    print(members)
-    print(current_user.id)
-    if cur_board.isPrivate and str(current_user.id) not in members:
-        return render_template('oops.html')
-    return render_template('board.html', tasks=tasks, members=members, board=cur_board)
+    if current_user.is_authenticated:
+        session = db_session.create_session()
+        # tasks = session.query(Task.Task).filter(Task.Task.board == int(id))
+        #TODO (возможно): переделать на tasks = cur_board.tasks.split(',')
+        cur_board = session.query(Board.Board).filter(Board.Board.id == int(id)).first()
+        if cur_board:
+            members = str(cur_board.workers).split(',')
+        else:
+            return abort(404)
+
+        tasks = cur_board.tasks.split(',')[1:-1]
+        TASKS = []
+        for id in tasks:
+            if id.isdigit():
+                print("id - ", id)
+                # TASK = session.query(Task.Task).filter(Task.Task.id == int(id)).first()
+                TASK = session.query(Task.Task).all() # .filter(Task.Task.id == 1).first()
+                print("TASK - ", TASK)
+                # if TASK:
+                #     TASKS.append(TASK)
+                #     print(TASK.title)
+        MEMBERS = []
+        for id in members:
+            if id.isdigit():
+                MEMBER = session.query(User.User).filter(User.User.id == int(id)).first()
+                if MEMBER:
+                    MEMBERS.append(MEMBER)
+
+        # print(members)
+        # print(current_user.id)
+        if cur_board.isPrivate and str(current_user.id) not in members:
+            return render_template('oops.html')
+
+        print(TASKS, MEMBERS)
+        print(cur_board.tasks)
+        return render_template('board.html', tasks=TASKS, members=MEMBERS, board=cur_board)
+    return redirect('/login')
+
+
+@app.route('/add_task/<int:id>', methods=['POST', 'GET'])
+@login_required
+def add_task(id):
+    if current_user.is_authenticated:
+        form = NewTaskForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            board = session.query(Board.Board).filter(Board.Board.id == id).first()
+            tsk = board.tasks
+            TASKS = tsk.split(',')
+            if not TASKS[-2].isdigit():
+                taskId = 1
+            else:
+                taskId = int(TASKS[-2]) + 1
+
+            task = Task.Task(
+                id=taskId,
+                title=form.title.data,
+                content=form.content.data,
+                author=current_user.name,
+                user_id=current_user.id,
+                board=id
+            )
+            taskId = task.id
+            # print(task.id, taskId, task.id == taskId)
+            TASK = session.query(Task.Task).filter(Task.Task.id == taskId - 1).first()
+            print("!!!")
+            print(TASK)
+            # print(task.id)
+            board.tasks = tsk + str(taskId) + ','
+            # print(int(board.tasks.split(',')[-2]), taskId, int(board.tasks.split(',')[-2]) == taskId)
+            # session.commit()
+            session.merge(board)
+            return redirect('/board/' + str(id))
+        return render_template('new_task.html', form=form)
+    return redirect('/login')
+
 
 
 if __name__ == '__main__':

@@ -6,10 +6,11 @@ import sqlalchemy.ext.declarative as dec
 SqlAlchemyBase = dec.declarative_base()
 
 __factory = None
+engine = None
 
 
 def global_init(db_file):
-    global __factory
+    global __factory, engine
 
     if __factory:
         return

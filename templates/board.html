@@ -69,6 +69,10 @@
             width: 10%;
         }
 
+        .invite-block {
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -95,16 +99,43 @@
         <div class="content">
             <h1>content</h1>
             <hr noshade width="100%">
+            <a class="btn btn-outline-danger" href="/add_task/{{ board.id }}" style="margin-bottom: 15px;">Добавить запись</a>
+            {% for item in tasks %}
+                {% if item.title != "" %}
+                    <h4 style="font-weight: 200">{{ item.title }}</h4>
+                    <hr noshade align="left" width="50%">
+                {% else %}
+                    <h4 style="font-weight: 200">Запись №{{ loop.index }}</h4>
+                    <hr noshade align="left" width="50%">
+                {% endif %}
+                <div class="content" style="width: 70%; margin-left: 10%">
+                    <p class="text">
+                        {{ item.content }}
+                    </p>
+                </div>
+                <div class="author">
+                    <p class="author">Автор - {{ item.author }}</p>
+                </div>
+                <hr noshade color="lightgray" width="80%">
+            {% endfor %}
         </div>
         <div class="members">
             <h1>members</h1>
             <hr noshade width="100%">
-            <div id="invite-block">
+            <div id="invite-block" style="margin-bottom: 20px;">
                 <button class="btn btn-outline-warning invite" onclick="invite()">Пригласить пользователя</button>
                 <div id="invite-link"></div>
             </div>
             <script src="../static/scripts/sc2.js"></script>
+            <div class="" style="width: 100%; text-align: center">
+                {% for member in members %}
+                    <a href="/profile/{{ member.id }}" style="color: black; font-size: 19pt; font-weight: 200; text-align: center">{{ member.name }}</a>
+                    <hr noshade color="orange" width="50%" align="center">
+                    <!-- TODO: Добавить страницу пользователя -->
+                {% endfor %}
+            </div>
         </div>
+        <!-- TODO: из меня хуевый программист на js -->
     </div>
 
 </body>
