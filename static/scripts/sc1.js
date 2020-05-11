@@ -13,3 +13,5 @@ window.onclick = (event) => {
 		}
 	}
 }
+
+// ой
