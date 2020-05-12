@@ -9,7 +9,7 @@ class Task(SqlAlchemyBase):
     __tablename__ = 'tasks'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True) #autoincrement=true
+                           primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String)
     author = sqlalchemy.Column(sqlalchemy.String)

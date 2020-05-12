@@ -178,12 +178,12 @@ def board(id):
         for id in tasks:
             if id.isdigit():
                 print("id - ", id)
-                # TASK = session.query(Task.Task).filter(Task.Task.id == int(id)).first()
-                TASK = session.query(Task.Task).all() # .filter(Task.Task.id == 1).first()
+                TASK = session.query(Task.Task).filter(Task.Task.id == int(id)).first()
+                # TASK = session.query(Task.Task).all() # .filter(Task.Task.id == 1).first()
                 print("TASK - ", TASK)
-                # if TASK:
-                #     TASKS.append(TASK)
-                #     print(TASK.title)
+                if TASK:
+                    TASKS.append(TASK)
+                    print(TASK.title)
         MEMBERS = []
         for id in members:
             if id.isdigit():
@@ -198,6 +198,7 @@ def board(id):
 
         print(TASKS, MEMBERS)
         print(cur_board.tasks)
+        session.commit()
         return render_template('board.html', tasks=TASKS, members=MEMBERS, board=cur_board)
     return redirect('/login')
 
@@ -226,15 +227,8 @@ def add_task(id):
                 board=id
             )
             taskId = task.id
-            # print(task.id, taskId, task.id == taskId)
-            TASK = session.query(Task.Task).filter(Task.Task.id == taskId - 1).first()
-            print("!!!")
-            print(TASK)
-            # print(task.id)
             board.tasks = tsk + str(taskId) + ','
-            # print(int(board.tasks.split(',')[-2]), taskId, int(board.tasks.split(',')[-2]) == taskId)
-            # session.commit()
-            session.merge(board)
+            session.commit()
             return redirect('/board/' + str(id))
         return render_template('new_task.html', form=form)
     return redirect('/login')
@@ -242,5 +236,5 @@ def add_task(id):
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/blogs.sqlite")
+    db_session.global_init("db/blogs.db")
     app.run(port=8080, host='127.0.0.1')
