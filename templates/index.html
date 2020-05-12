@@ -128,9 +128,9 @@
                         </div>
                         <div class="card-body">
                             <a class="card-title" href="/board/{{ item.id }}">{{ item.title }}</a>
-                            <p class="card-text">Автор - {{ item.user.name }}</p>
+                            <p class="card-text">Автор - {{ item.author }}</p>
                         </div>
-                        {% if current_user.id == item.user.id %}
+                        {% if current_user.id == item.user_id %}
                             <div style="margin-left: auto; margin-right: auto; margin-bottom: 5px;">
                                 <a href="/edit_board/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
                                 <a href="/delete_board/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>

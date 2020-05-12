@@ -6,6 +6,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Integ
 from wtforms.validators import DataRequired, email_validator
 import sqlalchemy
 import requests
+import os
+from flask_ngrok import run_with_ngrok
 
 from sqlalchemy import or_
 
@@ -17,6 +19,7 @@ from data import db_session, User, Task, __all_models, Board
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexliceum_secret_key'
+run_with_ngrok(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -135,15 +138,18 @@ def new_board():
             if session.query(Board.Board).filter(Board.Board.title == form.title.data,
                                                  Board.Board.user == current_user).first():
                 return render_template('new_board.html', message="Доска с таким именем уже существует", form=form)
+            user = session.query(User.User).filter(User.User.id == current_user.id).first()
             board = Board.Board(
                 title=form.title.data,
                 isPrivate=form.isPrivate.data,
-                user_id=current_user.id,
+                user_id=user.id,
                 workers=str(current_user.id),
+                author=user.name,
+                # user=current_user,
                 tasks="#,"
             )
             # board.workers.append(str(current_user.id))  # TODO: Не забыть добавлять ЗАПЯТУЮ при приглашениях
-            user = session.query(User.User).filter(User.User.id == current_user.id).first()
+
             user.board.insert(0, board)
             session.merge(user)
             id = board.id
@@ -236,7 +242,26 @@ def add_task(_id):
     return redirect('/login')
 
 
+@app.route('/join/<int:id>', methods=['POST', 'GET'])
+@login_required
+def join(id):
+    if current_user.is_authenticated:
+        session = db_session.create_session()
+        board = session.query(Board.Board).filter(Board.Board.id == id).first()
+        if board:
+            board.workers = board.workers + str(current_user.id) + ','
+            user = session.query(User.User).filter(User.User.id == current_user.id).first()
+            user.board.insert(0, board)
+            session.merge(user)
+            session.commit()
+        else:
+            abort(404)
+    else:
+        return redirect('/login')
+
+
 
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
-    app.run(port=8080, host='127.0.0.1')
+    # app.run(port=8080, host='127.0.0.1')
+    app.run()
