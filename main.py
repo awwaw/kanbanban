@@ -7,13 +7,10 @@ from wtforms.validators import DataRequired, email_validator
 import sqlalchemy
 import requests
 import os
-from flask_ngrok import run_with_ngrok
 
 from sqlalchemy import or_
 
 from data.Forms import LoginForm, RegisterForm, NewBoardForm, NewTaskForm
-
-#TODO: Пофиксить говно с вылетом при добавлении работы
 
 from data import db_session, User, Task, __all_models, Board
 
