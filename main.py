@@ -203,14 +203,14 @@ def board(id):
     return redirect('/login')
 
 
-@app.route('/add_task/<int:id>', methods=['POST', 'GET'])
+@app.route('/add_task/<int:_id>', methods=['POST', 'GET'])
 @login_required
-def add_task(id):
+def add_task(_id):
     if current_user.is_authenticated:
         form = NewTaskForm()
         if form.validate_on_submit():
             session = db_session.create_session()
-            board = session.query(Board.Board).filter(Board.Board.id == id).first()
+            board = session.query(Board.Board).filter(Board.Board.id == _id).first()
             tsk = board.tasks
             TASKS = tsk.split(',')
             if not TASKS[-2].isdigit():
@@ -219,17 +219,19 @@ def add_task(id):
                 taskId = int(TASKS[-2]) + 1
 
             task = Task.Task(
-                id=taskId,
+                # id=taskId,
                 title=form.title.data,
                 content=form.content.data,
                 author=current_user.name,
                 user_id=current_user.id,
-                board=id
+                board=_id
             )
             taskId = task.id
+            print(taskId)
             board.tasks = tsk + str(taskId) + ','
-            session.commit()
-            return redirect('/board/' + str(id))
+            # session.commit()
+            session.merge(board)
+            return redirect('/board/' + str(_id))
         return render_template('new_task.html', form=form)
     return redirect('/login')
 
