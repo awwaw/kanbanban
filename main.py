@@ -19,7 +19,6 @@ from data import db_session, User, Task, __all_models, Board
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexliceum_secret_key'
-run_with_ngrok(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -252,5 +251,4 @@ def join(id):
 
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
-    # app.run(port=8080, host='127.0.0.1')
-    app.run()
+    app.run(port=8080, host='127.0.0.1')
