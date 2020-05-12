@@ -14,6 +14,9 @@ class Task(SqlAlchemyBase):
     content = sqlalchemy.Column(sqlalchemy.String)
     author = sqlalchemy.Column(sqlalchemy.String)
     user_id = sqlalchemy.Column(sqlalchemy.Integer)
-    board = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("boards.id"))
+    # board = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("boards.id"))
+    board = orm.relation("Board")
+    board_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("boards.id"))
     files = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     # user = orm.relation('User')

@@ -88,6 +88,7 @@
             </div>
             <script src="../static/scripts/sc1.js"></script>
         </nav>
+        <button class="btn btn-outline-secondary" href="/" style="margin-left: 10px">На главную</button>
     </nav>
 
     <div class="header-block">
@@ -97,18 +98,18 @@
 
     <div class="row">
         <div class="content">
-            <h1>content</h1>
+            <h1>Записи</h1>
             <hr noshade width="100%">
             <a class="btn btn-outline-danger" href="/add_task/{{ board.id }}" style="margin-bottom: 15px;">Добавить запись</a>
             {% for item in tasks %}
                 {% if item.title != "" %}
                     <h4 style="font-weight: 200">{{ item.title }}</h4>
-                    <hr noshade align="left" width="50%">
+                    <hr noshade align="left" width="20%">
                 {% else %}
                     <h4 style="font-weight: 200">Запись №{{ loop.index }}</h4>
-                    <hr noshade align="left" width="50%">
+                    <hr noshade align="left" width="20%">
                 {% endif %}
-                <div class="content" style="width: 70%; margin-left: 10%">
+                <div class="content" style="width: 70%; margin-left: 5%">
                     <p class="text">
                         {{ item.content }}
                     </p>
@@ -116,11 +117,11 @@
                 <div class="author">
                     <p class="author">Автор - {{ item.author }}</p>
                 </div>
-                <hr noshade color="lightgray" width="80%">
+                <hr noshade color="lightgray" width="80%" align="left">
             {% endfor %}
         </div>
         <div class="members">
-            <h1>members</h1>
+            <h1>Участники</h1>
             <hr noshade width="100%">
             <div id="invite-block" style="margin-bottom: 20px;">
                 <button class="btn btn-outline-warning invite" onclick="invite()">Пригласить пользователя</button>

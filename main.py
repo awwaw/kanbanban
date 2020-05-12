@@ -148,7 +148,7 @@ def new_board():
                 workers=str(current_user.id) + ',',
                 author=user.name,
                 user=user,
-                tasks="#,"
+                # tasks="#,"
             )
             # board.workers.append(str(current_user.id))  # TODO: Не забыть добавлять ЗАПЯТУЮ при приглашениях
 
@@ -156,7 +156,6 @@ def new_board():
             session.merge(user)
             id = board.id
             # session.add(board)
-            print(id)
             session.commit()
             return redirect('/board/' + str(id)) #TODO: Сделать перенаправление на страницу доски
         return render_template("new_board.html", title="Новая доска", form=form)
@@ -180,32 +179,18 @@ def board(id):
             members = str(cur_board.workers).split(',')
         else:
             return abort(404)
-
-        tasks = cur_board.tasks.split(',')[1:-1]
+        tasks = cur_board.tasks
         TASKS = []
-        for id in tasks:
-            if id.isdigit():
-                print("id - ", id)
-                TASK = session.query(Task.Task).filter(Task.Task.id == int(id)).first()
-                # TASK = session.query(Task.Task).all() # .filter(Task.Task.id == 1).first()
-                print("TASK - ", TASK)
-                if TASK:
-                    TASKS.append(TASK)
-                    print(TASK.title)
+        for TASK in tasks:
+            TASKS.append(TASK)
         MEMBERS = []
         for id in members:
             if id.isdigit():
                 MEMBER = session.query(User.User).filter(User.User.id == int(id)).first()
                 if MEMBER:
                     MEMBERS.append(MEMBER)
-
-        # print(members)
-        # print(current_user.id)
         if cur_board.isPrivate and str(current_user.id) not in members:
             return render_template('oops.html')
-
-        print(TASKS, MEMBERS)
-        print(cur_board.tasks)
         session.commit()
         return render_template('board.html', tasks=TASKS, members=MEMBERS, board=cur_board)
     return redirect('/login')
@@ -219,12 +204,11 @@ def add_task(_id):
         if form.validate_on_submit():
             session = db_session.create_session()
             board = session.query(Board.Board).filter(Board.Board.id == _id).first()
-            tsk = board.tasks
-            TASKS = tsk.split(',')
-            if not TASKS[-2].isdigit():
+            TASKS = board.tasks
+            if len(TASKS) == 0:
                 taskId = 1
             else:
-                taskId = int(TASKS[-2]) + 1
+                taskId = int(TASKS[-1].id) + 1
 
             task = Task.Task(
                 # id=taskId,
@@ -232,13 +216,15 @@ def add_task(_id):
                 content=form.content.data,
                 author=current_user.name,
                 user_id=current_user.id,
-                board=_id
+                # board=_id
             )
-            taskId = task.id
-            print(taskId)
-            board.tasks = tsk + str(taskId) + ','
-            # session.commit()
+            # taskId = task.id
+            # print(taskId)
+            # board.tasks = board.tasks + str(task.id) + ','
+            board.tasks.insert(0, task)
+            print(board.tasks)
             session.merge(board)
+            session.commit()
             return redirect('/board/' + str(_id))
         return render_template('new_task.html', form=form)
     return redirect('/login')

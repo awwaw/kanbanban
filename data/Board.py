@@ -13,9 +13,9 @@ class Board(SqlAlchemyBase):
     author = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     workers = sqlalchemy.Column(sqlalchemy.String)
-    tasks = sqlalchemy.Column(sqlalchemy.String)
+    # tasks = sqlalchemy.Column(sqlalchemy.String)
     isPrivate = sqlalchemy.Column(sqlalchemy.Boolean)
-
+    tasks = orm.relation('Task', back_populates="board")
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
