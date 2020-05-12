@@ -10,7 +10,7 @@ class Board(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, autoincrement=True,
                            primary_key=True)
-    author = sqlalchemy.Column(sqlalchemy.String)
+    author = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     workers = sqlalchemy.Column(sqlalchemy.String)
     tasks = sqlalchemy.Column(sqlalchemy.String)

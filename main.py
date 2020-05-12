@@ -121,8 +121,10 @@ def logout():
 def mainPage():
     if current_user.is_authenticated:
         session = db_session.create_session()
-        boards = session.query(Board.Board).filter(or_(Board.Board.user == current_user,
+        boards = session.query(Board.Board).filter(or_(Board.Board.user_id == current_user.id,
                                                    Board.Board.workers.contains(str(current_user.id))))[::-1]
+        for board in boards:
+            print(board.user.name)
         return render_template('index.html', boards=boards)
     else:
         return render_template("mainPage.html", title="Kanbanban")
@@ -143,9 +145,9 @@ def new_board():
                 title=form.title.data,
                 isPrivate=form.isPrivate.data,
                 user_id=user.id,
-                workers=str(current_user.id),
+                workers=str(current_user.id) + ',',
                 author=user.name,
-                # user=current_user,
+                user=user,
                 tasks="#,"
             )
             # board.workers.append(str(current_user.id))  # TODO: Не забыть добавлять ЗАПЯТУЮ при приглашениях
@@ -254,6 +256,7 @@ def join(id):
             user.board.insert(0, board)
             session.merge(user)
             session.commit()
+            return redirect('/board/' + str(id))
         else:
             abort(404)
     else:
