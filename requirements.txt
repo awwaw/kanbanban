@@ -3,3 +3,4 @@ Flask-wtf
 requests
 Flask-login
 sqlalchemy
+werkzeug
